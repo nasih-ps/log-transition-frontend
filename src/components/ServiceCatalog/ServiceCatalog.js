@@ -66,7 +66,7 @@ const ServiceCatalog = () => {
   return (
     <Container maxWidth="lg">
       <Box my={4}>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h2" align="center" gutterBottom>
           Service Catalog Selection
         </Typography>
 
