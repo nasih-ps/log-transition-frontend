@@ -20,12 +20,14 @@ import {
   TableRow, 
   Paper, 
   IconButton,
-  Chip
+  Chip,
+  DialogContentText
 } from '@mui/material';
 import { 
   Add as AddIcon, 
   Edit as EditIcon, 
-  Delete as DeleteIcon 
+  Delete as DeleteIcon,
+  Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -44,6 +46,8 @@ const ServicesTasksManager = () => {
   );
 
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showServiceAnalysis, setShowServiceAnalysis] = useState(false);
+  const [serviceAnalysis, setServiceAnalysis] = useState('');
   const [selectedService, setSelectedService] = useState(null);
   const [newTask, setNewTask] = useState({ name: '', description: '' });
   const [userId] = useState(1);
@@ -74,6 +78,21 @@ const ServicesTasksManager = () => {
 
     fetchTasksForServices();
   }, [userId, services]);
+
+  const handleGenerateServiceAnalysis = async (serviceId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/service-analysis/${userId}/${serviceId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch service analysis');
+      }
+      const analysis = await response.text();
+      setServiceAnalysis(analysis);
+      setShowServiceAnalysis(true);
+    } catch (error) {
+      console.error('Error generating service analysis:', error);
+    }
+  };
+
 
   const handleDeleteTask = (serviceIndex, taskIndex) => {
     const updatedServices = [...services];
@@ -143,7 +162,7 @@ const ServicesTasksManager = () => {
   return (
     <Container maxWidth="lg">
       <Box my={4}>
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h2" align="center" gutterBottom>
           Services and Tasks Manager
         </Typography>
 
@@ -164,6 +183,7 @@ const ServicesTasksManager = () => {
                         variant="outlined" 
                       />
                     </Box>
+                    <Box display="flex" gap={2}>
                     <Button 
                       variant="contained" 
                       color="primary" 
@@ -175,6 +195,15 @@ const ServicesTasksManager = () => {
                     >
                       Add Task
                     </Button>
+                    <Button 
+                        variant="outlined" 
+                        color="secondary" 
+                        startIcon={<AnalyticsIcon />}
+                        onClick={() => handleGenerateServiceAnalysis(service.id)}
+                      >
+                        Generate Service Analysis
+                      </Button>
+                    </Box>
                   </Box>
 
                   <TableContainer component={Paper}>
@@ -213,6 +242,29 @@ const ServicesTasksManager = () => {
             </Grid>
           ))}
         </Grid>
+
+        {/* Service Analysis Dialog */}
+        <Dialog
+          open={showServiceAnalysis}
+          onClose={() => setShowServiceAnalysis(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Service Analysis</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {serviceAnalysis}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button 
+              onClick={() => setShowServiceAnalysis(false)} 
+              color="primary"
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <Dialog 
           open={showAddTask} 

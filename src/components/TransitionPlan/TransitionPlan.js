@@ -75,7 +75,7 @@ const TransitionPlan = () => {
     <Container maxWidth="lg">
       <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
         <Typography 
-          variant="h4" 
+          variant="h2" 
           gutterBottom 
           align="center" 
           sx={{ mb: 3 }}
